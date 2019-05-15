@@ -11,17 +11,24 @@ import java.util.*
 
 class Interpreter {
     private var subs: MutableMap<String, Int> = mutableMapOf()
-    private val memory: MutableMap<String, String> = mutableMapOf()
+    val memory: MutableMap<String, String> = mutableMapOf()
 
-    private val stackTrace: Stack<StackElement> = Stack()
+    val stackTrace: Stack<StackElement> = Stack()
     private lateinit var executableLines: MutableList<Line>
-    private var currentLine: Int = 0
+    var currentLine: Int = 0
 
     private var operators: MutableMap<String, Operator> = mutableMapOf(
             Tokens.CALL.text to CallOperator(this),
             Tokens.PRINT.text to PrintOperator(memory, OutputConsole()),
             Tokens.SET.text to SetOperator(memory))
 
+    fun init(tokens: List<Token>) {
+        mapToSubs(tokens)
+
+        val mainLine = subs["main"]
+        //put main in stack
+        setCurrentLine("main", mainLine!!)
+    }
 
     fun interpret(tokens: List<Token>) {
         mapToSubs(tokens)
@@ -39,6 +46,17 @@ class Interpreter {
             val line = executableLines[currentLine]
             decompise(line.tokens)
         }
+    }
+
+    fun step() {
+        currentLine++
+        if (currentLine == executableLines.size || executableLines[currentLine].tokens[0].token == Tokens.SUB) {
+            val pop = stackTrace.pop()
+            currentLine = pop.line
+            return
+        }
+        val line = executableLines[currentLine]
+        decompise(line.tokens)
     }
 
     fun decompise(list: List<Token>) {
