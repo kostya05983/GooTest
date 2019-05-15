@@ -1,4 +1,4 @@
-package org.goo
+package org.goo.api
 
 interface OutputStrategy {
 

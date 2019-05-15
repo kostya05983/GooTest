@@ -1,30 +1,30 @@
 package org.goo.debugger
 
-import org.goo.InputStrategy
+import org.goo.api.InputStrategy
 import org.goo.interpreter.Interpreter
 import org.goo.scanner.Token
 
-class Debugger(private val inputStrategy: InputStrategy) {
+class Debugger(private val inputStrategy: InputStrategy, private val interpreter: Interpreter) {
     val stopPoints = mutableListOf<Int>()
     private var currentDebugLine: Int? = null
+    var isRunning = false
 
-    private val interpetator: Interpreter = Interpreter()
 
     fun debug(tokens: List<Token>) {
-        interpetator.init(tokens)
+        interpreter.init(tokens)
 
-        while (interpetator.stackTrace.isNotEmpty() && !stopPoints.contains(interpetator.currentLine)
-                && currentDebugLine != interpetator.currentLine) {
-            interpetator.step()
+        while (isRunning && interpreter.stackTrace.isNotEmpty() && !stopPoints.contains(interpreter.currentLine)
+                && currentDebugLine != interpreter.currentLine) {
+            interpreter.step()
         }
-        currentDebugLine = interpetator.currentLine
+        currentDebugLine = interpreter.currentLine
         waitInput()
     }
 
 
     private fun waitInput() {
 //        println("Stopped at ${1 + currentDebugLine!!}")
-        inputStrategy.wait {
+        inputStrategy.wait({
             when (it) {
                 Commands.STEP_INTO.text -> {
                     stepInto()
@@ -39,26 +39,26 @@ class Debugger(private val inputStrategy: InputStrategy) {
                     showMemory()
                 }
             }
-        }
+        }, currentDebugLine!!)
     }
 
     private fun stepInto() {
-        interpetator.step()
-        currentDebugLine = interpetator.currentLine
+        interpreter.step()
+        currentDebugLine = interpreter.currentLine
         waitInput()
     }
 
     private fun stepOver() {
-        currentDebugLine = interpetator.currentLine + 1
-        while (interpetator.stackTrace.isNotEmpty() && stopPoints.contains(interpetator.currentLine)
-                || currentDebugLine != interpetator.currentLine) {
-            interpetator.step()
+        currentDebugLine = interpreter.currentLine + 1
+        while (isRunning && interpreter.stackTrace.isNotEmpty() && stopPoints.contains(interpreter.currentLine)
+                || currentDebugLine != interpreter.currentLine) {
+            interpreter.step()
         }
         waitInput()
     }
 
     private fun showMemory() {
-        val memory = interpetator.memory
+        val memory = interpreter.memory
         for ((key, value) in memory) {
             println("$key -> $value")
         }
@@ -66,7 +66,7 @@ class Debugger(private val inputStrategy: InputStrategy) {
     }
 
     private fun showStackTrace() {
-        val stackTrace = interpetator.stackTrace.reversed()
+        val stackTrace = interpreter.stackTrace.reversed()
 
         for (element in stackTrace) {
             println("Line=${element.line} name=${element.name}")

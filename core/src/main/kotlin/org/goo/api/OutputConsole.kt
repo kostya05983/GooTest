@@ -1,4 +1,4 @@
-package org.goo
+package org.goo.api
 
 class OutputConsole : OutputStrategy {
     override fun print(s: String) {

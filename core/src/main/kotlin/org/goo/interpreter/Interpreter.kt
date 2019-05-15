@@ -1,6 +1,6 @@
 package org.goo.interpreter
 
-import org.goo.OutputConsole
+import org.goo.api.OutputConsole
 import org.goo.interpreter.operators.CallOperator
 import org.goo.interpreter.operators.Operator
 import org.goo.interpreter.operators.PrintOperator

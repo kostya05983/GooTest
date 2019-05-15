@@ -1,6 +1,6 @@
 package org.goo.interpreter.operators
 
-import org.goo.OutputStrategy
+import org.goo.api.OutputStrategy
 
 class PrintOperator(private val memory: Map<String, String>, private val output: OutputStrategy) : Operator {
     override fun interpreter(vararg args: String) {
