@@ -1,7 +1,9 @@
 package org.goo.interpreter.operators
 
-class PrintOperator: BinaryOperator {
-    override fun interpreter(tokens: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+import org.goo.OutputStrategy
+
+class PrintOperator(private val memory: Map<String, String>, private val output: OutputStrategy) : Operator {
+    override fun interpreter(vararg args: String) {
+        output.print(memory[args[0]]!!)
     }
 }

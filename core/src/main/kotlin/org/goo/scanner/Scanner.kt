@@ -10,14 +10,14 @@ class Scanner {
 
         val result = LinkedList<Token>()
 
-        for (line in lines) {
-            val trimmedLine = line.trim()
+        for (i in 0 until lines.size) {
+            val trimmedLine = lines[i].trim()
             val expectedTokens = trimmedLine.split(" ")
 
             for (token in expectedTokens) {
-                result.add(tokenDeterminer.getToken(token))
+                result.add(tokenDeterminer.getToken(token, i))
             }
-            result.add(Token(Tokens.NEWLINE, "\n"))
+            result.add(Token(Tokens.NEWLINE, "\n", i))
         }
         return result
     }

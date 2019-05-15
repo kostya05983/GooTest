@@ -1,3 +1,3 @@
 package org.goo.scanner
 
-data class Token(var token: Tokens, var text: String)
+data class Token(var token: Tokens, var text: String, val line: Int)
