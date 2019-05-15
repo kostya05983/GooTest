@@ -15,7 +15,6 @@ import java.io.PipedOutputStream
 
 class Console : View() {
 
-    private val editor: Editor by inject()
 
     override val root: TextArea = textarea {
         isEditable = false

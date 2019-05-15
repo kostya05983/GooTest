@@ -1,6 +1,5 @@
 package org.goo.view
 
-import javafx.scene.Parent
 import javafx.scene.control.TextArea
 import javafx.scene.input.KeyCombination
 import org.goo.debugger.Debugger
@@ -14,20 +13,22 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 
 class CLIWindow : View() {
-
     private val scanner = Scanner()
     private val syntaxAnalyzer = SyntaxAnalyzer()
     private val semanticAnalyzer = SemanticAnalyzer()
+    val editor: Editor by param()
+    private val out = PipedOutputStream()
+    private val inputConsoleWindow: InputConsoleWindow = find(mapOf(InputConsoleWindow::input to PipedInputStream(out)))
+
+
+    private val outputStrategy: OutputToConsoleWindow by inject()
+    private val interpreter: Interpreter = Interpreter(outputStrategy)
+    private val debugger: Debugger = Debugger(inputConsoleWindow, interpreter)
+
     override val root: TextArea = textarea {
         loadShortCut()
         maxHeight = 20.0
     }
-
-    private val out = PipedOutputStream()
-    private val inputConsoleWindow: InputConsoleWindow by inject(params = mapOf("test" to PipedInputStream(out)))
-
-    private val interpreter: Interpreter = Interpreter()
-    private val debugger: Debugger = Debugger(inputConsoleWindow, interpreter)
 
     private fun loadShortCut() {
         shortcut(KeyCombination.valueOf("Ctrl+ Enter")) {
@@ -44,30 +45,36 @@ class CLIWindow : View() {
                 fire(ClearOutputEvent())
             }
             ConsoleCommand.START.text -> {
-//                val text = editor.codeArea.text
-//                val tokens = scanner.scan(text)
-//                val errors = syntaxAnalyzer.analyze(tokens)
-//                if (errors.isNotEmpty()) {
-//                    val semanticError = semanticAnalyzer.analyze(tokens)
-//                    if (semanticError) {
-//                        debugger.debug(tokens)
-//                    }
-//                }
+                runAsync {
+                    val text = editor.codeArea.text
+                    val tokens = scanner.scan(text)
+                    val errors = syntaxAnalyzer.analyze(tokens)
+                    if (errors.isEmpty()) {
+                        val semanticError = semanticAnalyzer.analyze(tokens)
+                        if (semanticError) {
+                            debugger.isRunning = true
+                            debugger.debug(tokens)
+                            debugger.isRunning = false
+                        }
+                    }
+                    fire(OutputEventLn("End debug session"))
+                }
             }
             ConsoleCommand.ADD.text -> {
                 val number = split[1].toIntOrNull() ?: let {
-                    fire(OutputEvent("Add number in add expression"))
+                    fire(OutputEventLn("Add number in add expression"))
                     return
                 }
                 debugger.stopPoints.add(number)
-                fire(OutputEvent("Successfully add point at ${number}"))
+                fire(OutputEventLn("Successfully add point at $number"))
             }
             ConsoleCommand.REMOVE.text -> {
                 val number = split[1].toIntOrNull() ?: let {
-                    fire(OutputEvent("Add number in add expression"))
+                    fire(OutputEventLn("Add number in add expression"))
                     return
                 }
                 debugger.stopPoints.remove(number)
+                fire(OutputEventLn("Successfully remove point at $number"))
             }
             ConsoleCommand.OUTPUT_POINTS.text -> {
                 val sb = StringBuilder()
@@ -75,11 +82,11 @@ class CLIWindow : View() {
                 for (point in points) {
                     sb.append("line $point")
                 }
-                fire(OutputEvent(sb.toString()))
+                fire(OutputEventLn(sb.toString()))
             }
             ConsoleCommand.VAR.text, ConsoleCommand.STEP_INTO.text,
             ConsoleCommand.TRACE.text, ConsoleCommand.STEP_OVER.text -> {
-                out.write(line.toByteArray())
+                out.write("$line\n".toByteArray())
                 out.flush()
             }
             else -> {

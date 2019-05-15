@@ -13,7 +13,8 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
     fun debug(tokens: List<Token>) {
         interpreter.init(tokens)
 
-        while (isRunning && interpreter.stackTrace.isNotEmpty() && !stopPoints.contains(interpreter.currentLine)
+        if (interpreter.stackTrace.isEmpty()) return
+        while (isRunning && !stopPoints.contains(interpreter.currentLine)
                 && currentDebugLine != interpreter.currentLine) {
             interpreter.step()
         }
@@ -38,11 +39,16 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
                 Commands.VAR.text -> {
                     showMemory()
                 }
+                else -> {
+                    interpreter.outputStrategy.print("No such debugger command")
+                    waitInput()
+                }
             }
         }, currentDebugLine!!)
     }
 
     private fun stepInto() {
+        if (interpreter.stackTrace.isEmpty()) return
         interpreter.step()
         currentDebugLine = interpreter.currentLine
         waitInput()
@@ -50,6 +56,7 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
 
     private fun stepOver() {
         currentDebugLine = interpreter.currentLine + 1
+        if (interpreter.stackTrace.isEmpty()) return
         while (isRunning && interpreter.stackTrace.isNotEmpty() && stopPoints.contains(interpreter.currentLine)
                 || currentDebugLine != interpreter.currentLine) {
             interpreter.step()
@@ -60,7 +67,7 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
     private fun showMemory() {
         val memory = interpreter.memory
         for ((key, value) in memory) {
-            println("$key -> $value")
+            interpreter.outputStrategy.print("$key -> $value")
         }
         waitInput()
     }
@@ -69,7 +76,7 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
         val stackTrace = interpreter.stackTrace.reversed()
 
         for (element in stackTrace) {
-            println("Line=${element.line} name=${element.name}")
+            interpreter.outputStrategy.print("Line=${element.line} name=${element.name}")
         }
         waitInput()
     }

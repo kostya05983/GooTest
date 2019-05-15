@@ -26,7 +26,9 @@ class MainWindow : View() {
                         minHeight = Dimension(20.0, Dimension.LinearUnits.px)
                     }
                 }
-                add<CLIWindow>()
+
+                val cliWindow = find<CLIWindow>(mapOf(CLIWindow::editor to editor))
+                add(cliWindow)
                 region {
                     style {
                         minHeight = Dimension(20.0, Dimension.LinearUnits.px)

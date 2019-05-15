@@ -3,14 +3,17 @@ package org.goo.view
 import org.goo.api.InputStrategy
 import org.goo.debugger.Commands
 import tornadofx.Controller
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.io.PipedInputStream
 
 class InputConsoleWindow() : InputStrategy, Controller() {
-    private val input: PipedInputStream by param()
+    val input: PipedInputStream by param()
 
     override fun wait(func: (input: String) -> Unit, debugLine: Int) {
         fire(DebugLineEvent(debugLine)) //highlight line
-        val line = input.readBytes().toString()
+        val bufferedReader = BufferedReader(InputStreamReader(input))
+        val line = bufferedReader.readLine()
         restore(line)
         func.invoke(line)
     }

@@ -1,6 +1,7 @@
 package org.goo.interpreter
 
 import org.goo.api.OutputConsole
+import org.goo.api.OutputStrategy
 import org.goo.interpreter.operators.CallOperator
 import org.goo.interpreter.operators.Operator
 import org.goo.interpreter.operators.PrintOperator
@@ -9,7 +10,7 @@ import org.goo.scanner.Token
 import org.goo.scanner.Tokens
 import java.util.*
 
-class Interpreter {
+class Interpreter(val outputStrategy: OutputStrategy) {
     private var subs: MutableMap<String, Int> = mutableMapOf()
     val memory: MutableMap<String, String> = mutableMapOf()
 

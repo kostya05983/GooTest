@@ -53,7 +53,7 @@ class Editor : View() {
                 fill = ColorProperties.fontColor
             }
             this.addSelection(CssSelection(CssSelector(CssRuleSet(CssRule.c("debug")))) {
-                fill = ColorProperties.fontColor
+                fill = ColorProperties.selectionColor
             })
         }
         add(codeArea) //TODO this wrong example of adding
