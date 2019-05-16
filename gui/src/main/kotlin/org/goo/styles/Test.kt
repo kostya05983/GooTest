@@ -1,4 +1,13 @@
 package org.goo.styles
 
-class Test {
+import tornadofx.Stylesheet
+import tornadofx.cssclass
+
+class Test: Stylesheet() {
+    companion object {
+        val test by cssclass()
+    }
+    init {
+
+    }
 }

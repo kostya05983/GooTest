@@ -38,27 +38,33 @@ class CLIWindow : View() {
         }
     }
 
+
     private fun cli(line: String) {
         val split = line.split(" ")
         when (split[0]) {
             ConsoleCommand.CLEAR.text -> {
                 fire(ClearOutputEvent())
             }
-            ConsoleCommand.START.text -> {
-                runAsync {
+            ConsoleCommand.DEBUG.text -> {
+                Thread {
                     val text = editor.codeArea.text
                     val tokens = scanner.scan(text)
+                    syntaxAnalyzer.reset()
                     val errors = syntaxAnalyzer.analyze(tokens)
                     if (errors.isEmpty()) {
                         val semanticError = semanticAnalyzer.analyze(tokens)
                         if (semanticError) {
+                            debugger.reset()
                             debugger.isRunning = true
                             debugger.debug(tokens)
                             debugger.isRunning = false
                         }
                     }
                     fire(OutputEventLn("End debug session"))
-                }
+                }.start()
+            }
+            ConsoleCommand.STOP.text -> {
+                debugger.isRunning = false
             }
             ConsoleCommand.ADD.text -> {
                 val number = split[1].toIntOrNull() ?: let {

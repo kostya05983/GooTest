@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.fxmisc.richtext.CodeArea
+import org.fxmisc.richtext.StyledTextArea
 import org.goo.ColorProperties
 import org.goo.styles.EditorStyles
 import tornadofx.*
@@ -20,6 +21,7 @@ class Editor : View() {
     val path: String by param()
 
     val codeArea = CodeArea()
+//    val styledTextArea = StyledTextArea()
 
     init {
         importStylesheet(EditorStyles::class)
@@ -52,15 +54,16 @@ class Editor : View() {
             Stylesheet.text {
                 fill = ColorProperties.fontColor
             }
-            this.addSelection(CssSelection(CssSelector(CssRuleSet(CssRule.c("debug")))) {
-                fill = ColorProperties.selectionColor
-            })
         }
         add(codeArea) //TODO this wrong example of adding
+
+        val css = this@Editor.javaClass.getResource("/test.css").toExternalForm()
+        stylesheets.add(css)
     }
 
     private fun markDebugLine(line: Int) {
-        codeArea.setStyle(line, Arrays.asList("debug"))
+        if (line < codeArea.paragraphs.size)
+            codeArea.setStyle(line, Collections.singleton("parameter"))
     }
 
     /**
