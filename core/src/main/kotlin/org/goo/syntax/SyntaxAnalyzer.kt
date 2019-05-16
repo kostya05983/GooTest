@@ -14,6 +14,10 @@ class SyntaxAnalyzer {
         return currentState.errors
     }
 
+    fun reset() {
+        currentState = InitState(this, LinkedList())
+    }
+
     fun changeState(newState: State) {
         currentState = newState
     }

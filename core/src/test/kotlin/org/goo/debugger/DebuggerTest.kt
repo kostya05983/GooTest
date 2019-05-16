@@ -1,5 +1,7 @@
 package org.goo.debugger
 
+import org.goo.interpreter.Interpreter
+import org.goo.interpreter.OutputTest
 import org.goo.scanner.Scanner
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -33,7 +35,7 @@ internal class DebuggerTest {
             val scanner = Scanner()
             val tokens = scanner.scan(text)
 
-            val debugger = Debugger(InputTest("var"))
+            val debugger = Debugger(InputTest("var"), Interpreter(OutputTest()))
             debugger.stopPoints.add(1)
             debugger.debug(tokens)
 
@@ -53,7 +55,7 @@ internal class DebuggerTest {
             val scanner = Scanner()
             val tokens = scanner.scan(text)
 
-            val debugger = Debugger(InputTest("var"))
+            val debugger = Debugger(InputTest("var"), Interpreter(OutputTest()))
             debugger.stopPoints.add(4)
             debugger.debug(tokens)
             assertEquals("""
@@ -77,7 +79,7 @@ internal class DebuggerTest {
             val tokens = scanner.scan(text)
 
 
-            val debugger = Debugger(InputTest("trace"))
+            val debugger = Debugger(InputTest("trace"), Interpreter(OutputTest()))
             debugger.stopPoints.add(2)
             debugger.debug(tokens)
 
@@ -103,7 +105,7 @@ internal class DebuggerTest {
             val scanner = Scanner()
             val tokens = scanner.scan(text)
 
-            val debugger = Debugger(InputTest("trace"))
+            val debugger = Debugger(InputTest("trace"), Interpreter(OutputTest()))
             debugger.stopPoints.add(6)
             debugger.debug(tokens)
 

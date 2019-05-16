@@ -18,6 +18,8 @@ class ContinuousStartState(override val analyzer: SyntaxAnalyzer, override val e
             Tokens.SET -> {
                 analyzer.changeState(TernarInternalState(analyzer, errors))
             }
+            Tokens.NEWLINE -> {
+            }
             else -> {
                 errors.add(token)
             }

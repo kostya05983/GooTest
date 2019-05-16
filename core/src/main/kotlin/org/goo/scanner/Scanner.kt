@@ -15,7 +15,10 @@ class Scanner {
             val expectedTokens = trimmedLine.split(" ")
 
             for (token in expectedTokens) {
-                result.add(tokenDeterminer.getToken(token, i))
+                val determined = tokenDeterminer.getToken(token, i)
+                if (determined != null) {
+                    result.add(determined)
+                }
             }
             result.add(Token(Tokens.NEWLINE, "\n", i))
         }

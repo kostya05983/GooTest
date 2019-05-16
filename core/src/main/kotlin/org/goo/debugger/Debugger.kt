@@ -25,6 +25,7 @@ class Debugger(private val inputStrategy: InputStrategy,
 
     fun reset() {
         currentDebugLine = null
+        interpreter.memory.clear()
     }
 
 
@@ -54,21 +55,27 @@ class Debugger(private val inputStrategy: InputStrategy,
 
     private fun stepInto() {
         if (interpreter.stackTrace.isEmpty()) return
-        val line = interpreter.executableLines[interpreter.currentLine]
         interpreter.execute()
-//        interpreter.step()
         currentDebugLine = interpreter.currentLine
+        if (interpreter.stackTrace.isEmpty()) return
         waitInput()
     }
 
     private fun stepOver() {
         currentDebugLine = interpreter.currentLine + 1
         if (interpreter.stackTrace.isEmpty()) return
-        while (isRunning && interpreter.stackTrace.isNotEmpty() && stopPoints.contains(interpreter.currentLine)
-                || currentDebugLine != interpreter.currentLine) {
-//            interpreter.step()
+
+        val temp = mutableListOf<Int>().apply {
+            addAll(stopPoints)
+        }
+        temp.remove(interpreter.currentLine)
+        while (isRunning && interpreter.stackTrace.isNotEmpty() &&
+                !temp.contains(interpreter.currentLine)
+                && currentDebugLine != interpreter.currentLine) {
             interpreter.execute()
         }
+
+        if (interpreter.stackTrace.isEmpty()) return
         waitInput()
     }
 

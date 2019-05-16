@@ -1,11 +1,9 @@
 package org.goo.interpreter
 
 import org.goo.scanner.Scanner
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class InterpreterTest {
-
     @Test
     fun testOneSub() {
         val text = """
@@ -16,7 +14,7 @@ internal class InterpreterTest {
         val scanner = Scanner()
         val tokens = scanner.scan(text)
 
-        val interpreter = Interpreter()
+        val interpreter = Interpreter(OutputTest())
         interpreter.interpret(tokens)
     }
 
@@ -32,7 +30,7 @@ internal class InterpreterTest {
         val scanner = Scanner()
         val tokens = scanner.scan(text)
 
-        val interpreter = Interpreter()
+        val interpreter = Interpreter(OutputTest())
         interpreter.interpret(tokens)
     }
 
@@ -48,24 +46,7 @@ internal class InterpreterTest {
         val scanner = Scanner()
         val tokens = scanner.scan(text)
 
-        val interpreter = Interpreter()
-        interpreter.interpret(tokens)
-    }
-
-    @Test
-    fun testRecursion() {
-        val text = """
-            sub test
-                print a
-                call test
-            sub main
-                set a 5
-                call test
-        """.trimIndent()
-        val scanner = Scanner()
-        val tokens = scanner.scan(text)
-
-        val interpreter = Interpreter()
+        val interpreter = Interpreter(OutputTest())
         interpreter.interpret(tokens)
     }
 }

@@ -31,11 +31,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
     }
 
     fun interpret(tokens: List<Token>) {
-        mapToSubs(tokens)
-
-        //put main in stack
-        setCurrentLine("main", -1)
-
+        init(tokens)
         while (stackTrace.isNotEmpty()) {
             execute()
         }
@@ -49,7 +45,18 @@ class Interpreter(val outputStrategy: OutputStrategy) {
             return
         }
 
-        val line = executableLines[currentLine]
+        var line = executableLines[currentLine]
+        while (line.tokens.isEmpty()) {
+            currentLine++
+            line = executableLines[currentLine]
+        }
+
+        if (currentLine >= executableLines.size) {
+            val pop = stackTrace.pop()
+            currentLine = pop.line + 1
+            checkPostCondition()
+            return
+        }
 
         if (line.tokens[0].token == Tokens.SUB && line.isExecuted) {
             val pop = stackTrace.pop()
@@ -65,7 +72,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         checkPostCondition()
     }
 
-    fun checkPostCondition() {
+    private fun checkPostCondition() {
         //Check post return
         if (currentLine >= executableLines.size) {
             val pop = stackTrace.pop()
@@ -73,7 +80,19 @@ class Interpreter(val outputStrategy: OutputStrategy) {
             checkPostCondition()
             return
         }
-        val nextLine = executableLines[currentLine]
+        var nextLine = executableLines[currentLine]
+        while (nextLine.tokens.isEmpty()) {
+            currentLine++
+            nextLine = executableLines[currentLine]
+        }
+
+        if (currentLine >= executableLines.size) {
+            val pop = stackTrace.pop()
+            currentLine = pop.line + 1
+            checkPostCondition()
+            return
+        }
+
         if (nextLine.tokens[0].token == Tokens.SUB) {
             val pop = stackTrace.pop()
             currentLine = pop.line + 1
@@ -120,15 +139,4 @@ class Interpreter(val outputStrategy: OutputStrategy) {
             subs[text] = tokens[subIndexes[i]].line
         }
     }
-}
-
-fun test(a: Int) {
-    val b = 2
-}
-
-fun main() {
-    val a = 7
-    test(a)
-    println(a)
-
 }

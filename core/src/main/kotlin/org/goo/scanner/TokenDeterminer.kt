@@ -2,7 +2,7 @@ package org.goo.scanner
 
 class TokenDeterminer {
 
-    fun getToken(token: String, line: Int): Token {
+    fun getToken(token: String, line: Int): Token? {
         return when (token) {
             Tokens.SET.text -> {
                 Token(Tokens.SET, token, line)
@@ -15,6 +15,12 @@ class TokenDeterminer {
             }
             Tokens.SUB.text -> {
                 Token(Tokens.SUB, token, line)
+            }
+            Tokens.NEWLINE.text  -> {
+                Token(Tokens.NEWLINE, token, line)
+            }
+            "" -> {
+                null
             }
             else -> {
                 if (token.toIntOrNull() == null) {

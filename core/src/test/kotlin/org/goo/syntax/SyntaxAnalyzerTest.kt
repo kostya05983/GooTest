@@ -202,4 +202,30 @@ internal class SyntaxAnalyzerTest {
         }
     }
 
+    @Test
+    fun longSub() {
+        val text = """
+            sub test
+                set b 5
+                print a
+                call test2
+
+            sub test2
+                print b
+
+            sub main
+                set c 8
+                call test
+        """.trimIndent()
+        val scanner = Scanner()
+
+        val tokens = scanner.scan(text)
+
+        val analyzer = SyntaxAnalyzer()
+
+        val errors = analyzer.analyze(tokens)
+
+        assertEquals(0, errors.size)
+    }
+
 }
