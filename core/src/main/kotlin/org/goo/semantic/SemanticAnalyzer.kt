@@ -7,8 +7,18 @@ import kotlin.Boolean
 class SemanticAnalyzer {
 
     fun analyze(tokens: List<Token>): Boolean {
-        val identifiers = tokens.filter { it.token == Tokens.IDENTIFIER }.toMutableList()
-        return !findDuplicates(identifiers)
+        val identifiers = filterForIdentifiersSubs(tokens)
+        return !findDuplicates(identifiers.toMutableList()) && identifiers.map { it.text }.contains("main")
+    }
+
+    private fun filterForIdentifiersSubs(tokens: List<Token>): List<Token> {
+        val result = mutableListOf<Token>()
+        for (i in 0 until tokens.size) {
+            if (tokens[i].token == Tokens.SUB) {
+                result.add(tokens[i + 1])
+            }
+        }
+        return result
     }
 
     private fun findDuplicates(list: MutableList<Token>): Boolean {
@@ -21,7 +31,7 @@ class SemanticAnalyzer {
         })
 
         for (i in 0 until list.size - 1) {
-            if (list[i] == list[i + 1]) {
+            if (list[i].text == list[i + 1].text) {
                 return true
             }
         }

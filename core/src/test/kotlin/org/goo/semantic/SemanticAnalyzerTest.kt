@@ -25,6 +25,23 @@ internal class SemanticAnalyzerTest {
         val text = """
             sub main
                 set a 5
+                set a 6
+        """.trimIndent()
+        val scanner = Scanner()
+        val tokens = scanner.scan(text)
+
+        val semanticAnalyzer = SemanticAnalyzer()
+        assertTrue(semanticAnalyzer.analyze(tokens))
+    }
+
+    @Test
+    fun testIdenticalSub() {
+        val text = """
+            sub test
+                set b 4
+            sub test
+                set c 5
+            sub main
                 set a 5
         """.trimIndent()
         val scanner = Scanner()
@@ -35,13 +52,9 @@ internal class SemanticAnalyzerTest {
     }
 
     @Test
-    fun testIdenticalSub() {
+    fun testWithoutMain() {
         val text = """
             sub test
-                set 4
-            sub test
-                set 5
-            sub main
                 set a 5
         """.trimIndent()
         val scanner = Scanner()
