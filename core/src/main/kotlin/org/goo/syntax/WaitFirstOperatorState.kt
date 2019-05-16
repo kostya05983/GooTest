@@ -3,16 +3,13 @@ package org.goo.syntax
 import org.goo.scanner.Token
 import org.goo.scanner.Tokens
 
-class ContinuousStartState(override val analyzer: SyntaxAnalyzer, override val errors: MutableList<Token>) : State {
+class WaitFirstOperatorState(override val analyzer: SyntaxAnalyzer, override val errors: MutableList<Token>) : State {
     override fun check(token: Token) {
         when (token.token) {
-            Tokens.PRINT -> {
+            Tokens.CALL -> {
                 analyzer.changeState(BinaryRightState(analyzer, errors))
             }
-            Tokens.SUB -> {
-                analyzer.changeState(BinaryRightSubState(analyzer, errors))
-            }
-            Tokens.CALL -> {
+            Tokens.PRINT -> {
                 analyzer.changeState(BinaryRightState(analyzer, errors))
             }
             Tokens.SET -> {

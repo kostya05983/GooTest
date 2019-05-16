@@ -40,6 +40,7 @@ class CLIWindowController : Controller() {
             ConsoleCommand.OUTPUT_POINTS.text -> outputPoints()
             ConsoleCommand.VAR.text, ConsoleCommand.STEP_INTO.text,
             ConsoleCommand.TRACE.text, ConsoleCommand.STEP_OVER.text -> debuggerCommand(line)
+            ConsoleCommand.RUN.text -> run()
             else -> fire(OutputEventLn("No such command"))
         }
     }
@@ -57,15 +58,19 @@ class CLIWindowController : Controller() {
                     debugger.isRunning = true
                     debugger.debug(tokens)
                     debugger.isRunning = false
+                    fire(OutputEventLn("End debug session"))
                 }
             }
-            fire(OutputEventLn("End debug session"))
+
         }.start()
     }
 
     private fun stop() {
         debugger.isRunning = false
-        fire(OutputEventLn("End debug session"))
+        interpreter.isRunning = false
+//        out.write("$line\n".toByteArray())
+//        out.flush()
+        fire(OutputEventLn("End session"))
     }
 
     private fun add(split: List<String>) {
@@ -98,5 +103,25 @@ class CLIWindowController : Controller() {
     private fun debuggerCommand(line: String) {
         out.write("$line\n".toByteArray())
         out.flush()
+    }
+
+    private fun run() {
+        Thread {
+            val text = editor.codeArea.text
+            val tokens = scanner.scan(text)
+            syntaxAnalyzer.reset()
+            val errors = syntaxAnalyzer.analyze(tokens)
+            if (errors.isEmpty()) {
+                val semanticError = semanticAnalyzer.analyze(tokens)
+                if (semanticError) {
+                    interpreter.interpret(tokens)
+                    fire(OutputEventLn("[INFO] End with run session"))
+                } else {
+                    fire(OutputEventLn("[ERROR] semantic exceptions"))
+                }
+            } else {
+                fire(OutputEventLn("[ERROR] syntax exceptions"))
+            }
+        }.start()
     }
 }

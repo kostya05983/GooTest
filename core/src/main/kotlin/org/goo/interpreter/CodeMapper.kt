@@ -10,6 +10,11 @@ class CodeMapper {
     var subs: MutableMap<String, Int> = mutableMapOf()
     lateinit var executableLines: MutableList<Line>
 
+    fun reset() {
+        subs.clear()
+        executableLines.clear()
+    }
+
     /**
      * Mapping code blocks
      */

@@ -11,6 +11,9 @@ class SyntaxAnalyzer {
         for (token in tokens) {
             currentState.check(token)
         }
+        if (currentState is WaitFirstOperatorState || currentState is WaitFirstOperatorState) {
+            currentState.errors.add(tokens.last())
+        }
         return currentState.errors
     }
 

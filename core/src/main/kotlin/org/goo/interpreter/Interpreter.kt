@@ -8,6 +8,7 @@ import java.util.*
 
 /**
  * Interpreter implementation
+ * @author kostya05983
  */
 class Interpreter(val outputStrategy: OutputStrategy) {
     val memory: MutableMap<String, String> = mutableMapOf()
@@ -15,6 +16,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
     val stackTrace: Stack<StackElement> = Stack()
     var currentLine: Int = 0
     private val codeMapper: CodeMapper = CodeMapper()
+    var isRunning: Boolean = false
 
     private var operators: MutableMap<String, Operator> = mutableMapOf(
             Tokens.CALL.text to CallOperator(this),
@@ -24,6 +26,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
     )
 
     fun init(tokens: List<Token>) {
+        isRunning = true
         codeMapper.mapToSubs(tokens)
 
         val mainLine = codeMapper.subs["main"]
@@ -32,9 +35,17 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         currentLine++
     }
 
+    fun reset() {
+        isRunning = false
+        memory.clear()
+        stackTrace.clear()
+        currentLine = 0
+        codeMapper.reset()
+    }
+
     fun interpret(tokens: List<Token>) {
         init(tokens)
-        while (stackTrace.isNotEmpty()) {
+        while (isRunning && stackTrace.isNotEmpty()) {
             execute()
         }
     }
@@ -43,7 +54,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
      * Execute separate line and increment
      */
     fun execute() {
-        if (currentLine >= codeMapper.executableLines.size) {
+        if (isRunning && currentLine >= codeMapper.executableLines.size) {
             stackTrace.popStackElement()
             return
         }
@@ -73,7 +84,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
 
     private fun checkPostCondition() {
         //Check post return
-        if (currentLine >= codeMapper.executableLines.size) {
+        if (isRunning && currentLine >= codeMapper.executableLines.size) {
             stackTrace.popStackElement()
             return
         }
@@ -104,10 +115,9 @@ class Interpreter(val outputStrategy: OutputStrategy) {
     }
 
     fun setCurrentLine(name: String, callingLine: Int) {
-        val line = codeMapper.subs[name]
-        //TODO runtime errors
+        val line = codeMapper.subs[name] ?: error("Such sub not found name=$name")
         stackTrace.push(StackElement(name, callingLine))
-        currentLine = line!!
+        currentLine = line
     }
 
     private fun Stack<StackElement>.popStackElement() {

@@ -228,4 +228,43 @@ internal class SyntaxAnalyzerTest {
         assertEquals(0, errors.size)
     }
 
+    @Test
+    fun subWithoutContinue() {
+        val text = """
+            sub test
+
+        """.trimIndent()
+        val scanner = Scanner()
+
+        val tokens = scanner.scan(text)
+
+        val analyzer = SyntaxAnalyzer()
+
+        val errors = analyzer.analyze(tokens)
+
+        assertNotEquals(0, errors.size)
+    }
+
+    @Test
+    fun testCallingSubWithoutContinue() {
+        val text = """
+
+            sub main
+                call test
+
+            sub test
+
+        """.trimIndent()
+        val scanner = Scanner()
+
+        val tokens = scanner.scan(text)
+
+        val analyzer = SyntaxAnalyzer()
+
+        val errors = analyzer.analyze(tokens)
+
+        assertNotEquals(0, errors.size)
+    }
+
+
 }

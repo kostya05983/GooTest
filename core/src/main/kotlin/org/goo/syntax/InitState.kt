@@ -7,7 +7,10 @@ class InitState(override val analyzer: SyntaxAnalyzer, override val errors: Muta
     override fun check(token: Token) {
         when (token.token) {
             Tokens.SUB -> {
-                analyzer.changeState(BinaryRightState(analyzer, errors))
+                analyzer.changeState(BinaryRightSubState(analyzer, errors))
+            }
+            Tokens.NEWLINE -> {
+
             }
             else -> {
                 errors.add(token)

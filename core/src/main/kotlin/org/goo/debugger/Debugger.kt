@@ -4,33 +4,47 @@ import org.goo.api.InputStrategy
 import org.goo.interpreter.Interpreter
 import org.goo.scanner.Token
 
+/**
+ * Class of debugger contains interpreter to manage
+ * and strategy to get messages from user
+ * @author kostya05983
+ */
 class Debugger(private val inputStrategy: InputStrategy,
                private val interpreter: Interpreter) {
     val stopPoints = mutableListOf<Int>()
     private var currentDebugLine: Int? = null
     var isRunning = false
 
-
+    /**
+     * Debug our code until meet stopPoint or currentDebugLine
+     * currentDebugLine - the line where debugger want to stop in future
+     */
     fun debug(tokens: List<Token>) {
         interpreter.init(tokens)
 
-        if (interpreter.stackTrace.isEmpty()) return
-        while (isRunning && !stopPoints.contains(interpreter.currentLine)
+        if (!isRunning || interpreter.stackTrace.isEmpty()) return
+        while (isRunning && interpreter.stackTrace.isNotEmpty()
+                && !stopPoints.contains(interpreter.currentLine)
                 && currentDebugLine != interpreter.currentLine) {
             interpreter.execute()
         }
+        if (!isRunning || interpreter.stackTrace.isEmpty()) return
         currentDebugLine = interpreter.currentLine
         waitInput()
     }
 
+    /**
+     * rest debugger to default state
+     */
     fun reset() {
         currentDebugLine = null
         interpreter.memory.clear()
     }
 
-
+    /**
+     * behaviour after user input
+     */
     private fun waitInput() {
-//        println("Stopped at ${1 + currentDebugLine!!}")
         inputStrategy.wait({
             when (it) {
                 Commands.STEP_INTO.text -> {
@@ -53,6 +67,9 @@ class Debugger(private val inputStrategy: InputStrategy,
         }, currentDebugLine!!)
     }
 
+    /**
+     * Just execute line of code and wait
+     */
     private fun stepInto() {
         if (interpreter.stackTrace.isEmpty()) return
         interpreter.execute()
@@ -61,6 +78,9 @@ class Debugger(private val inputStrategy: InputStrategy,
         waitInput()
     }
 
+    /**
+     * Step over the line, just go next and wait for intersection
+     */
     private fun stepOver() {
         currentDebugLine = interpreter.currentLine + 1
         if (interpreter.stackTrace.isEmpty()) return
@@ -79,6 +99,9 @@ class Debugger(private val inputStrategy: InputStrategy,
         waitInput()
     }
 
+    /**
+     * Show current memory of our interpreter
+     */
     private fun showMemory() {
         val memory = interpreter.memory
         for ((key, value) in memory) {
@@ -87,6 +110,9 @@ class Debugger(private val inputStrategy: InputStrategy,
         waitInput()
     }
 
+    /**
+     * Just print stackTrace for command
+     */
     private fun showStackTrace() {
         val stackTrace = interpreter.stackTrace.reversed()
 
