@@ -37,35 +37,15 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         setCurrentLine("main", -1)
 
         while (stackTrace.isNotEmpty()) {
-//            step()
             execute()
-//            if (isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
-//                isSubStart = false
-//                currentLine++
-//                continue
-//            }
-//            if (currentLine >= executableLines.size || !isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
-//                val pop = stackTrace.pop()
-//                currentLine = pop.line
-//                isSubStart = true
-//                continue
-//            }
-//            if (executableLines[currentLine].tokens[0].token == Tokens.CALL) {
-//                val line = executableLines[currentLine]
-//                decompise(line.tokens)
-//                isSubStart = true
-//                continue
-//            }
-//            val line = executableLines[currentLine]
-//            decompise(line.tokens)
-//            currentLine++
         }
     }
 
-    fun executeSecondVersion() {
+    fun execute() {
         if (currentLine >= executableLines.size) {
             val pop = stackTrace.pop()
-            currentLine = pop.line
+            currentLine = pop.line + 1
+            checkPostCondition()
             return
         }
 
@@ -73,95 +53,34 @@ class Interpreter(val outputStrategy: OutputStrategy) {
 
         if (line.tokens[0].token == Tokens.SUB && line.isExecuted) {
             val pop = stackTrace.pop()
-            currentLine = pop.line
+            currentLine = pop.line + 1
+            checkPostCondition()
             return
         }
-        if (line.isExecuted) {
-            currentLine++
-            return
-        }
-        if (line.tokens[0].token == Tokens.CALL) {
-            decompise(line.tokens)
-            line.isExecuted = true
-            return
-        }
-
         decompise(line.tokens)
         line.isExecuted = true
         currentLine++
 
         //Check post return
+        checkPostCondition()
+    }
+
+    fun checkPostCondition() {
+        //Check post return
         if (currentLine >= executableLines.size) {
             val pop = stackTrace.pop()
-            currentLine = pop.line
+            currentLine = pop.line + 1
+            checkPostCondition()
             return
         }
         val nextLine = executableLines[currentLine]
-        if (nextLine.tokens[0].token == Tokens.SUB && nextLine.isExecuted) {
+        if (nextLine.tokens[0].token == Tokens.SUB) {
             val pop = stackTrace.pop()
-            currentLine = pop.line
+            currentLine = pop.line + 1
+            checkPostCondition()
             return
         }
     }
-
-    fun execute() {
-        if (currentLine >= executableLines.size) {
-            val pop = stackTrace.pop()
-            currentLine = pop.line
-            return
-        }
-        val line = executableLines[currentLine]
-        if (!line.isExecuted) {
-            if (line.tokens[0].token == Tokens.SUB) {
-                line.isExecuted = true
-                currentLine++
-                return
-            }
-            decompise(line.tokens)
-            line.isExecuted = true
-        } else {
-            if (line.tokens[0].token == Tokens.SUB) {
-                val pop = stackTrace.pop()
-                currentLine = pop.line
-                return
-            }
-            currentLine++
-            val nextLine = executableLines[currentLine]
-            decompise(nextLine.tokens)
-            nextLine.isExecuted = true
-        }
-    }
-
-//    fun step() {
-//        if (isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
-//            isSubStart = false
-//            currentLine++
-//            return
-//        }
-//
-//        if (currentLine >= executableLines.size || !isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
-//            val pop = stackTrace.pop()
-//            currentLine = pop.line
-//            isSubStart = true
-//            return
-//        }
-//        if (executableLines[currentLine].tokens[0].token == Tokens.CALL) {
-//            val line = executableLines[currentLine]
-//            decompise(line.tokens)
-//            isSubStart = true
-//            return
-//        }
-//        val line = executableLines[currentLine]
-//        decompise(line.tokens)
-//        currentLine++
-//        if (currentLine == executableLines.size) {
-//            val pop = stackTrace.pop()
-//            currentLine = pop.line
-//            isSubStart = true
-//            return
-//        }
-//
-//    }
 
     fun decompise(list: List<Token>) {
         val args = list.subList(1, list.size).map { it.text }.toTypedArray()
@@ -203,13 +122,13 @@ class Interpreter(val outputStrategy: OutputStrategy) {
     }
 }
 
-fun test() {
-
+fun test(a: Int) {
+    val b = 2
 }
 
 fun main() {
     val a = 7
-    test()
+    test(a)
     println(a)
 
 }

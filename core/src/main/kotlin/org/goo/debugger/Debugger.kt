@@ -3,7 +3,6 @@ package org.goo.debugger
 import org.goo.api.InputStrategy
 import org.goo.interpreter.Interpreter
 import org.goo.scanner.Token
-import org.goo.scanner.Tokens
 
 class Debugger(private val inputStrategy: InputStrategy,
                private val interpreter: Interpreter) {
@@ -18,7 +17,7 @@ class Debugger(private val inputStrategy: InputStrategy,
         if (interpreter.stackTrace.isEmpty()) return
         while (isRunning && !stopPoints.contains(interpreter.currentLine)
                 && currentDebugLine != interpreter.currentLine) {
-            interpreter.executeSecondVersion()
+            interpreter.execute()
         }
         currentDebugLine = interpreter.currentLine
         waitInput()
@@ -56,7 +55,7 @@ class Debugger(private val inputStrategy: InputStrategy,
     private fun stepInto() {
         if (interpreter.stackTrace.isEmpty()) return
         val line = interpreter.executableLines[interpreter.currentLine]
-        interpreter.executeSecondVersion()
+        interpreter.execute()
 //        interpreter.step()
         currentDebugLine = interpreter.currentLine
         waitInput()
@@ -68,7 +67,7 @@ class Debugger(private val inputStrategy: InputStrategy,
         while (isRunning && interpreter.stackTrace.isNotEmpty() && stopPoints.contains(interpreter.currentLine)
                 || currentDebugLine != interpreter.currentLine) {
 //            interpreter.step()
-            interpreter.executeSecondVersion()
+            interpreter.execute()
         }
         waitInput()
     }
