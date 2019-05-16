@@ -3,6 +3,9 @@ package org.goo
 import javafx.scene.paint.Color
 import tornadofx.c
 
+/**
+ * Global main colors for gui
+ */
 object ColorProperties {
     var primaryColor: Color = c("#393939")
     var secondColor: Color = c("#45474a")

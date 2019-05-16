@@ -5,6 +5,12 @@ import tornadofx.Dimension
 import tornadofx.Stylesheet
 import tornadofx.box
 
+/**
+ * Default styles for code editor
+ * more about type css you can find
+ * if google type css tornadofx
+ * @author kostya05983
+ */
 class EditorStyles : Stylesheet() {
 
     init {

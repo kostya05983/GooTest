@@ -1,30 +1,28 @@
 package org.goo.view
 
 import javafx.scene.control.TextArea
-import javafx.scene.input.KeyCombination
-import org.goo.debugger.Debugger
-import org.goo.interpreter.Interpreter
-import org.goo.scanner.Scanner
-import org.goo.semantic.SemanticAnalyzer
-import org.goo.syntax.SyntaxAnalyzer
 import tornadofx.FXEvent
 import tornadofx.View
 import tornadofx.textarea
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
 
+/**
+ * Output Window for user
+ */
 class Console : View() {
-
-
-    override val root: TextArea = textarea {
-        isEditable = false
+    init {
         loadSubscriptions()
     }
 
+    override val root: TextArea = textarea {
+        isEditable = false
+    }
 
+    /**
+     * loadSubscriptions for events
+     */
     private fun loadSubscriptions() {
         subscribe<OutputEvent> {
-            root.text += it.line;
+            root.text += it.line
         }
 
         subscribe<ClearOutputEvent> {
@@ -41,4 +39,4 @@ class OutputEvent(val line: String) : FXEvent()
 
 class OutputEventLn(val line: String) : FXEvent()
 
-class ClearOutputEvent() : FXEvent()
+class ClearOutputEvent : FXEvent()
