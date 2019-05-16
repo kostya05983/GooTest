@@ -2,10 +2,7 @@ package org.goo.interpreter
 
 import org.goo.api.OutputConsole
 import org.goo.api.OutputStrategy
-import org.goo.interpreter.operators.CallOperator
-import org.goo.interpreter.operators.Operator
-import org.goo.interpreter.operators.PrintOperator
-import org.goo.interpreter.operators.SetOperator
+import org.goo.interpreter.operators.*
 import org.goo.scanner.Token
 import org.goo.scanner.Tokens
 import java.util.*
@@ -15,13 +12,15 @@ class Interpreter(val outputStrategy: OutputStrategy) {
     val memory: MutableMap<String, String> = mutableMapOf()
 
     val stackTrace: Stack<StackElement> = Stack()
-    private lateinit var executableLines: MutableList<Line>
+    lateinit var executableLines: MutableList<Line>
     var currentLine: Int = 0
 
     private var operators: MutableMap<String, Operator> = mutableMapOf(
             Tokens.CALL.text to CallOperator(this),
             Tokens.PRINT.text to PrintOperator(memory, OutputConsole()),
-            Tokens.SET.text to SetOperator(memory))
+            Tokens.SET.text to SetOperator(memory),
+            Tokens.SUB.text to SubOperator()
+    )
 
     fun init(tokens: List<Token>) {
         mapToSubs(tokens)
@@ -38,27 +37,131 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         setCurrentLine("main", -1)
 
         while (stackTrace.isNotEmpty()) {
-            currentLine++
-            if (currentLine == executableLines.size || executableLines[currentLine].tokens[0].token == Tokens.SUB) {
-                val pop = stackTrace.pop()
-                currentLine = pop.line
-                continue
-            }
-            val line = executableLines[currentLine]
-            decompise(line.tokens)
+//            step()
+            execute()
+//            if (isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
+//                isSubStart = false
+//                currentLine++
+//                continue
+//            }
+//            if (currentLine >= executableLines.size || !isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
+//                val pop = stackTrace.pop()
+//                currentLine = pop.line
+//                isSubStart = true
+//                continue
+//            }
+//            if (executableLines[currentLine].tokens[0].token == Tokens.CALL) {
+//                val line = executableLines[currentLine]
+//                decompise(line.tokens)
+//                isSubStart = true
+//                continue
+//            }
+//            val line = executableLines[currentLine]
+//            decompise(line.tokens)
+//            currentLine++
         }
     }
 
-    fun step() {
+    fun executeSecondVersion() {
+        if (currentLine >= executableLines.size) {
+            val pop = stackTrace.pop()
+            currentLine = pop.line
+            return
+        }
+
+        val line = executableLines[currentLine]
+
+        if (line.tokens[0].token == Tokens.SUB && line.isExecuted) {
+            val pop = stackTrace.pop()
+            currentLine = pop.line
+            return
+        }
+        if (line.isExecuted) {
+            currentLine++
+            return
+        }
+        if (line.tokens[0].token == Tokens.CALL) {
+            decompise(line.tokens)
+            line.isExecuted = true
+            return
+        }
+
+        decompise(line.tokens)
+        line.isExecuted = true
         currentLine++
-        if (currentLine == executableLines.size || executableLines[currentLine].tokens[0].token == Tokens.SUB) {
+
+        //Check post return
+        if (currentLine >= executableLines.size) {
+            val pop = stackTrace.pop()
+            currentLine = pop.line
+            return
+        }
+        val nextLine = executableLines[currentLine]
+        if (nextLine.tokens[0].token == Tokens.SUB && nextLine.isExecuted) {
+            val pop = stackTrace.pop()
+            currentLine = pop.line
+            return
+        }
+    }
+
+    fun execute() {
+        if (currentLine >= executableLines.size) {
             val pop = stackTrace.pop()
             currentLine = pop.line
             return
         }
         val line = executableLines[currentLine]
-        decompise(line.tokens)
+        if (!line.isExecuted) {
+            if (line.tokens[0].token == Tokens.SUB) {
+                line.isExecuted = true
+                currentLine++
+                return
+            }
+            decompise(line.tokens)
+            line.isExecuted = true
+        } else {
+            if (line.tokens[0].token == Tokens.SUB) {
+                val pop = stackTrace.pop()
+                currentLine = pop.line
+                return
+            }
+            currentLine++
+            val nextLine = executableLines[currentLine]
+            decompise(nextLine.tokens)
+            nextLine.isExecuted = true
+        }
     }
+
+//    fun step() {
+//        if (isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
+//            isSubStart = false
+//            currentLine++
+//            return
+//        }
+//
+//        if (currentLine >= executableLines.size || !isSubStart && executableLines[currentLine].tokens[0].token == Tokens.SUB) {
+//            val pop = stackTrace.pop()
+//            currentLine = pop.line
+//            isSubStart = true
+//            return
+//        }
+//        if (executableLines[currentLine].tokens[0].token == Tokens.CALL) {
+//            val line = executableLines[currentLine]
+//            decompise(line.tokens)
+//            isSubStart = true
+//            return
+//        }
+//        val line = executableLines[currentLine]
+//        decompise(line.tokens)
+//        currentLine++
+//        if (currentLine == executableLines.size) {
+//            val pop = stackTrace.pop()
+//            currentLine = pop.line
+//            isSubStart = true
+//            return
+//        }
+//
+//    }
 
     fun decompise(list: List<Token>) {
         val args = list.subList(1, list.size).map { it.text }.toTypedArray()
@@ -88,8 +191,8 @@ class Interpreter(val outputStrategy: OutputStrategy) {
             }
 
             if (tokens[i].token == Tokens.NEWLINE) {
-                executableLines.add(Line(tokens[i].line, tokens.subList(lastIndex + 1, i)))
-                lastIndex = i
+                executableLines.add(Line(tokens[i].line, tokens.subList(lastIndex, i), false))
+                lastIndex = i + 1
             }
         }
 
@@ -98,4 +201,15 @@ class Interpreter(val outputStrategy: OutputStrategy) {
             subs[text] = tokens[subIndexes[i]].line
         }
     }
+}
+
+fun test() {
+
+}
+
+fun main() {
+    val a = 7
+    test()
+    println(a)
+
 }

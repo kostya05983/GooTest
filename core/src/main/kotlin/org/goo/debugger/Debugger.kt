@@ -3,8 +3,10 @@ package org.goo.debugger
 import org.goo.api.InputStrategy
 import org.goo.interpreter.Interpreter
 import org.goo.scanner.Token
+import org.goo.scanner.Tokens
 
-class Debugger(private val inputStrategy: InputStrategy, private val interpreter: Interpreter) {
+class Debugger(private val inputStrategy: InputStrategy,
+               private val interpreter: Interpreter) {
     val stopPoints = mutableListOf<Int>()
     private var currentDebugLine: Int? = null
     var isRunning = false
@@ -16,10 +18,14 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
         if (interpreter.stackTrace.isEmpty()) return
         while (isRunning && !stopPoints.contains(interpreter.currentLine)
                 && currentDebugLine != interpreter.currentLine) {
-            interpreter.step()
+            interpreter.executeSecondVersion()
         }
         currentDebugLine = interpreter.currentLine
         waitInput()
+    }
+
+    fun reset() {
+        currentDebugLine = null
     }
 
 
@@ -49,7 +55,9 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
 
     private fun stepInto() {
         if (interpreter.stackTrace.isEmpty()) return
-        interpreter.step()
+        val line = interpreter.executableLines[interpreter.currentLine]
+        interpreter.executeSecondVersion()
+//        interpreter.step()
         currentDebugLine = interpreter.currentLine
         waitInput()
     }
@@ -59,7 +67,8 @@ class Debugger(private val inputStrategy: InputStrategy, private val interpreter
         if (interpreter.stackTrace.isEmpty()) return
         while (isRunning && interpreter.stackTrace.isNotEmpty() && stopPoints.contains(interpreter.currentLine)
                 || currentDebugLine != interpreter.currentLine) {
-            interpreter.step()
+//            interpreter.step()
+            interpreter.executeSecondVersion()
         }
         waitInput()
     }
