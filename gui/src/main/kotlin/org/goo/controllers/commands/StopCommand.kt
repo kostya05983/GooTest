@@ -8,18 +8,23 @@ import tornadofx.Controller
 class StopCommand(override val memory: CurrentSessionMemoryWrapper) : Command, Controller() {
     override fun execute(split: List<String>) {
         try {
-            memory.debuggerThread?.interrupt()
-            memory.debugger?.isRunning = false
+            if (memory.debuggerThread != null && memory.debuggerThread!!.isAlive) {
+                memory.debuggerThread?.interrupt()
+                memory.debugger?.isRunning = false
+                fire(OutputEventLn("[INFO] start to stop debugger session"))
+            }
         } catch (e: Exception) {
             println(e)
         }
         try {
-            memory.interpreterThread?.interrupt()
-            memory.interpreter?.isRunning = false
+            if (memory.interpreterThread != null && memory.interpreterThread!!.isAlive) {
+                memory.interpreterThread?.interrupt()
+                memory.interpreter?.isRunning = false
+                fire(OutputEventLn("[INFO] start to stop interpreter session"))
+            }
         } catch (e: Exception) {
             println(e)
         }
-        fire(OutputEventLn("[INFO] start to stop session"))
         fire(RestoreColor())
     }
 }
