@@ -21,6 +21,27 @@ Features:
 * add multiple lines to debug
 
 * empty lines will be skipped
+### It was tested with
+
+java 8 oracle
+java version "1.8.0_201"
+Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
+Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
+Gradle 
+------------------------------------------------------------
+Gradle 5.4.1
+------------------------------------------------------------
+
+Build time:   2019-04-26 08:14:42 UTC
+Revision:     261d171646b36a6a28d5a19a69676cd098a4c19d
+
+Kotlin:       1.3.21
+Groovy:       2.5.4
+Ant:          Apache Ant(TM) version 1.9.13 compiled on July 10 2018
+JVM:          1.8.0_201 (Oracle Corporation 25.201-b09)
+OS:           Linux 4.18.0-17-generic amd64
+
+ubuntu budgie
 
 ### Build project
 
