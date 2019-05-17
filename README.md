@@ -21,13 +21,12 @@ Features:
 * add multiple lines to debug
 
 * empty lines will be skipped
-### It was tested with
-
+### Tested with
 java 8 oracle
 java version "1.8.0_201"
 Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
 Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
-Gradle 
+
 ------------------------------------------------------------
 Gradle 5.4.1
 ------------------------------------------------------------
