@@ -5,6 +5,7 @@ import org.goo.controllers.commands.*
 import org.goo.view.Editor
 import org.goo.view.OutputEventLn
 import tornadofx.Controller
+import tornadofx.FXEvent
 
 /**
  * ModelView control cli command processing of gui
@@ -32,6 +33,10 @@ class CLIWindowController : Controller() {
             ConsoleCommand.CLEAR.text to ClearCommand(currentSessionMemoryWrapper)
     )
 
+    init {
+        loadSubscribers()
+    }
+
     fun cli(line: String) {
         val split = line.split(" ")
         val command = commands[split[0]]
@@ -41,4 +46,12 @@ class CLIWindowController : Controller() {
             fire(OutputEventLn("[ERROR] No such command"))
         }
     }
+
+    private fun loadSubscribers() {
+        subscribe<CommandEvent> {
+            cli(it.line)
+        }
+    }
 }
+
+class CommandEvent(val line: String) : FXEvent()

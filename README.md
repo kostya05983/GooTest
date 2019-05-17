@@ -38,6 +38,14 @@ and third for output
 
 * trace - output current stackTrace
 
+### ShortCuts commands
+
+* Ctrl + S save to file
+
+* F7 - step into
+
+* F8 - step_over
+
 #### Console commands
 
 * add <number> - add stop points to line

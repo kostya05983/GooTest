@@ -5,9 +5,11 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.fxmisc.richtext.CodeArea
 import org.goo.ColorProperties
+import org.goo.controllers.CommandEvent
 import org.goo.controllers.EditorController
 import org.goo.styles.CodeAreaStyles
 import org.goo.styles.EditorStyles
+import org.goo.ConsoleCommand
 import tornadofx.*
 
 /**
@@ -58,6 +60,12 @@ class Editor : View() {
     private fun loadShortCut() {
         shortcut(KeyCombination.valueOf("Ctrl+S")) {
             controller.writeTextToFile(codeArea.text, path)
+        }
+        shortcut(KeyCombination.valueOf("F7")) {
+            fire(CommandEvent(ConsoleCommand.STEP_INTO.text))
+        }
+        shortcut(KeyCombination.valueOf("F8")) {
+            fire(CommandEvent(ConsoleCommand.STEP_OVER.text))
         }
     }
 }
