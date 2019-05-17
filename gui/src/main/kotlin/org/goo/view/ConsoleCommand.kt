@@ -13,5 +13,6 @@ enum class ConsoleCommand(val text: String) {
     ADD("add"),
     REMOVE("remove"),
     OUTPUT_POINTS("points"),
-    RUN("run")
+    RUN("run"),
+    HELP("help")
 }

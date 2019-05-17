@@ -7,6 +7,7 @@ import org.goo.view.RestoreColor
 import tornadofx.Controller
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.InterruptedIOException
 import java.io.PipedInputStream
 
 /**
@@ -19,9 +20,13 @@ class InputConsoleWindow : InputStrategy, Controller() {
     override fun wait(func: (input: String) -> Unit, debugLine: Int) {
         fire(DebugLineEvent(debugLine)) //highlight line
         val bufferedReader = BufferedReader(InputStreamReader(input))
-        val line = bufferedReader.readLine()
-        restore(line)
-        func.invoke(line)
+        try {
+            val line = bufferedReader.readLine()
+            restore(line)
+            func.invoke(line)
+        } catch (e: InterruptedIOException) {
+            println(e)
+        }
     }
 
     /**

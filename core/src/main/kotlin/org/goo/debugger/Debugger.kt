@@ -11,21 +11,29 @@ import org.goo.scanner.Token
  */
 class Debugger(private val inputStrategy: InputStrategy,
                private val interpreter: Interpreter) {
-    val stopPoints = mutableListOf<Int>()
+    var stopPoints = mutableListOf<Int>()
     private var currentDebugLine: Int? = null
     var isRunning = false
 
     /**
      * Debug our code until meet stopPoint or currentDebugLine
      * currentDebugLine - the line where debugger want to stop in future
+     * About Condition in while loop, first condition
+     * isRunning - for signals from user
+     * second we check that program isn't ended
+     * third we check isn't currentLine is StopPoint?
+     * fourth - we check do we reach next debugging line?
+     * fifth - skip emptyness lines, if user set stop points on it
      */
     fun debug(tokens: List<Token>) {
         interpreter.init(tokens)
 
         if (!isRunning || interpreter.stackTrace.isEmpty()) return
         while (isRunning && interpreter.stackTrace.isNotEmpty()
-                && !stopPoints.contains(interpreter.currentLine)
-                && currentDebugLine != interpreter.currentLine) {
+                && currentDebugLine != interpreter.currentLine &&
+                !stopPoints.contains(interpreter.currentLine)
+                || interpreter.codeMapper
+                        .executableLines[interpreter.currentLine].tokens.isEmpty()) {
             interpreter.execute()
         }
         if (!isRunning || interpreter.stackTrace.isEmpty()) return
@@ -71,19 +79,25 @@ class Debugger(private val inputStrategy: InputStrategy,
      * Just execute line of code and wait
      */
     private fun stepInto() {
-        if (interpreter.stackTrace.isEmpty()) return
+        if (!isRunning || interpreter.stackTrace.isEmpty()) return
         interpreter.execute()
         currentDebugLine = interpreter.currentLine
-        if (interpreter.stackTrace.isEmpty()) return
+        if (!isRunning || interpreter.stackTrace.isEmpty()) return
         waitInput()
     }
 
     /**
      * Step over the line, just go next and wait for intersection
+     * About Condition in while loop, first condition
+     * isRunning - for signals from user
+     * second we check that program isn't ended
+     * third we check isn't currentLine is StopPoint?
+     * fourth - we check do we reach next debugging line?
+     * fifth - skip emptyness lines, if user set stop points on it
      */
     private fun stepOver() {
         currentDebugLine = interpreter.currentLine + 1
-        if (interpreter.stackTrace.isEmpty()) return
+        if (!isRunning || interpreter.stackTrace.isEmpty()) return
 
         val temp = mutableListOf<Int>().apply {
             addAll(stopPoints)
@@ -91,11 +105,13 @@ class Debugger(private val inputStrategy: InputStrategy,
         temp.remove(interpreter.currentLine)
         while (isRunning && interpreter.stackTrace.isNotEmpty() &&
                 !temp.contains(interpreter.currentLine)
-                && currentDebugLine != interpreter.currentLine) {
+                && currentDebugLine != interpreter.currentLine
+                || interpreter.codeMapper
+                        .executableLines[interpreter.currentLine].tokens.isEmpty()) {
             interpreter.execute()
         }
-
-        if (interpreter.stackTrace.isEmpty()) return
+        if (!isRunning || interpreter.stackTrace.isEmpty()) return
+        currentDebugLine = interpreter.currentLine
         waitInput()
     }
 

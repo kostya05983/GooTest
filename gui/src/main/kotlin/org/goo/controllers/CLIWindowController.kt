@@ -5,10 +5,7 @@ import org.goo.interpreter.Interpreter
 import org.goo.scanner.Scanner
 import org.goo.semantic.SemanticAnalyzer
 import org.goo.syntax.SyntaxAnalyzer
-import org.goo.view.ClearOutputEvent
-import org.goo.view.ConsoleCommand
-import org.goo.view.Editor
-import org.goo.view.OutputEventLn
+import org.goo.view.*
 import tornadofx.Controller
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -22,12 +19,14 @@ class CLIWindowController : Controller() {
     private val syntaxAnalyzer = SyntaxAnalyzer()
     private val semanticAnalyzer = SemanticAnalyzer()
     val editor: Editor by param()
-    private val out = PipedOutputStream()
-    private val inputConsoleWindow: InputConsoleWindow = find(mapOf(InputConsoleWindow::input to PipedInputStream(out)))
+    private var out: PipedOutputStream? = null
+    private val currentStopPoints = mutableListOf<Int>()
 
+    private var debugger: Debugger? = null
+    private var interpreter: Interpreter? = null
     private val outputStrategy: OutputToConsoleWindow by inject()
-    private val interpreter: Interpreter = Interpreter(outputStrategy)
-    private val debugger: Debugger = Debugger(inputConsoleWindow, interpreter)
+    private var debuggerThread: Thread? = null
+    private var interpreterThread: Thread? = null
 
     fun cli(line: String) {
         val split = line.split(" ")
@@ -41,12 +40,13 @@ class CLIWindowController : Controller() {
             ConsoleCommand.VAR.text, ConsoleCommand.STEP_INTO.text,
             ConsoleCommand.TRACE.text, ConsoleCommand.STEP_OVER.text -> debuggerCommand(line)
             ConsoleCommand.RUN.text -> run()
+            ConsoleCommand.HELP.text -> help()
             else -> fire(OutputEventLn("No such command"))
         }
     }
 
     private fun debug() {
-        Thread {
+        debuggerThread = Thread {
             val text = editor.codeArea.text
             val tokens = scanner.scan(text)
             syntaxAnalyzer.reset()
@@ -54,23 +54,39 @@ class CLIWindowController : Controller() {
             if (errors.isEmpty()) {
                 val semanticError = semanticAnalyzer.analyze(tokens)
                 if (semanticError) {
+                    val out = PipedOutputStream()
+                    this@CLIWindowController.out = out
+                    val inputConsoleWindow: InputConsoleWindow = find(mapOf(InputConsoleWindow::input to PipedInputStream(out)))
+                    val interpreter = Interpreter(outputStrategy)
+                    val debugger = Debugger(inputConsoleWindow, interpreter)
                     debugger.reset()
+                    debugger.stopPoints = currentStopPoints
                     debugger.isRunning = true
+                    this.debugger = debugger
                     debugger.debug(tokens)
                     debugger.isRunning = false
                     fire(OutputEventLn("End debug session"))
                 }
             }
-
-        }.start()
+        }
+        debuggerThread?.start()
     }
 
     private fun stop() {
-        debugger.isRunning = false
-        interpreter.isRunning = false
-//        out.write("$line\n".toByteArray())
-//        out.flush()
+        try {
+            debuggerThread?.interrupt()
+            debugger?.isRunning = false
+        } catch (e: Exception) {
+            println(e)
+        }
+        try {
+            interpreterThread?.interrupt()
+            interpreter?.isRunning = false
+        } catch (e: Exception) {
+            println(e)
+        }
         fire(OutputEventLn("End session"))
+        fire(RestoreColor())
     }
 
     private fun add(split: List<String>) {
@@ -78,7 +94,7 @@ class CLIWindowController : Controller() {
             fire(OutputEventLn("Add number in add expression"))
             return
         }
-        debugger.stopPoints.add(number)
+        currentStopPoints.add(number)
         fire(OutputEventLn("Successfully add point at $number"))
     }
 
@@ -87,26 +103,25 @@ class CLIWindowController : Controller() {
             fire(OutputEventLn("Add number in add expression"))
             return
         }
-        debugger.stopPoints.remove(number)
+        currentStopPoints.remove(number)
         fire(OutputEventLn("Successfully remove point at $number"))
     }
 
     private fun outputPoints() {
         val sb = StringBuilder()
-        val points = debugger.stopPoints
-        for (point in points) {
-            sb.append("line $point")
+        currentStopPoints.forEach {
+            sb.append("line $it")
         }
         fire(OutputEventLn(sb.toString()))
     }
 
     private fun debuggerCommand(line: String) {
-        out.write("$line\n".toByteArray())
-        out.flush()
+        out?.write("$line\n".toByteArray())
+        out?.flush()
     }
 
     private fun run() {
-        Thread {
+        interpreterThread = Thread {
             val text = editor.codeArea.text
             val tokens = scanner.scan(text)
             syntaxAnalyzer.reset()
@@ -114,6 +129,8 @@ class CLIWindowController : Controller() {
             if (errors.isEmpty()) {
                 val semanticError = semanticAnalyzer.analyze(tokens)
                 if (semanticError) {
+                    val interpreter = Interpreter(outputStrategy)
+                    this@CLIWindowController.interpreter = interpreter
                     interpreter.interpret(tokens)
                     fire(OutputEventLn("[INFO] End with run session"))
                 } else {
@@ -122,6 +139,19 @@ class CLIWindowController : Controller() {
             } else {
                 fire(OutputEventLn("[ERROR] syntax exceptions"))
             }
-        }.start()
+        }
+        interpreterThread?.start()
+    }
+
+    private fun help() {
+        val sb = StringBuilder()
+        sb.appendln("[INFO] step - go to next line")
+        sb.appendln("[INFO] step_over - go to next line skip current")
+        sb.appendln("[INFO] add <number> - add debug line")
+        sb.appendln("[INFO] remove <number> - remove debug line")
+        sb.appendln("[INFO] debug - start debug session")
+        sb.appendln("[INFO] run - run code")
+        sb.appendln("[INFO] clear - clear console output")
+        fire(OutputEventLn(sb.toString()))
     }
 }

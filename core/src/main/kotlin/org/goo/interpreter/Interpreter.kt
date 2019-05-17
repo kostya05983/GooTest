@@ -15,7 +15,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
 
     val stackTrace: Stack<StackElement> = Stack()
     var currentLine: Int = 0
-    private val codeMapper: CodeMapper = CodeMapper()
+    val codeMapper: CodeMapper = CodeMapper()
     var isRunning: Boolean = false
 
     private var operators: MutableMap<String, Operator> = mutableMapOf(
