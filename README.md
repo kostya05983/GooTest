@@ -12,7 +12,7 @@ interpreter and debugger
 
 ### Build project
 
-1. You need java 8 and gradle 5.4 to build this project
+1. You need java 8 oracle and gradle 5.4 to build this project
 
 2. Go to root gradle directory
 
@@ -30,9 +30,9 @@ and third for output
 
 #### Debugger commands
 
-* step - step to next debug line it's similar to step_into
+* i - step_into to next debug line it's similar to step_into
 
-* step_over - step to next line , skip debug of calls
+* o - step_over to next line , skip debug of calls
 
 * var - output current memory
 
