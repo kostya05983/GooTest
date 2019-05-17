@@ -90,8 +90,12 @@ class CLIWindowController : Controller() {
     }
 
     private fun add(split: List<String>) {
+        if (1 == split.size) {
+            fire(OutputEventLn("[ERROR] Add number in add expression"))
+            return
+        }
         val number = split[1].toIntOrNull() ?: let {
-            fire(OutputEventLn("Add number in add expression"))
+            fire(OutputEventLn("[ERROR] Add number in add expression"))
             return
         }
         currentStopPoints.add(number)
@@ -110,7 +114,7 @@ class CLIWindowController : Controller() {
     private fun outputPoints() {
         val sb = StringBuilder()
         currentStopPoints.forEach {
-            sb.append("line $it")
+            sb.appendln("line $it")
         }
         fire(OutputEventLn(sb.toString()))
     }

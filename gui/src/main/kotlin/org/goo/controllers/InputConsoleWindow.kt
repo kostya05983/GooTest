@@ -5,10 +5,7 @@ import org.goo.debugger.Commands
 import org.goo.view.DebugLineEvent
 import org.goo.view.RestoreColor
 import tornadofx.Controller
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.InterruptedIOException
-import java.io.PipedInputStream
+import java.io.*
 
 /**
  * Realization of api communication with debugger on gui side
@@ -24,7 +21,7 @@ class InputConsoleWindow : InputStrategy, Controller() {
             val line = bufferedReader.readLine()
             restore(line)
             func.invoke(line)
-        } catch (e: InterruptedIOException) {
+        } catch (e: IOException) {
             println(e)
         }
     }

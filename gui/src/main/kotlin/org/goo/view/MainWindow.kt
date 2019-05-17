@@ -5,7 +5,11 @@ import javafx.scene.Parent
 import javafx.scene.layout.Priority
 import org.goo.ColorProperties
 import tornadofx.*
+import kotlin.system.exitProcess
 
+/**
+ * Main Window
+ */
 class MainWindow : View() {
 
     override val root: Parent =
@@ -36,4 +40,13 @@ class MainWindow : View() {
                 }
                 add<Console>()
             }
+
+    /**
+     * Init after currentStage initialized
+     */
+    init {
+        currentStage?.setOnCloseRequest {
+            exitProcess(0)
+        }
+    }
 }

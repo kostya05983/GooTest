@@ -49,6 +49,7 @@ class Debugger(private val inputStrategy: InputStrategy,
         interpreter.memory.clear()
     }
 
+
     /**
      * behaviour after user input
      */
@@ -96,7 +97,7 @@ class Debugger(private val inputStrategy: InputStrategy,
      * fifth - skip emptyness lines, if user set stop points on it
      */
     private fun stepOver() {
-        currentDebugLine = interpreter.currentLine + 1
+        currentDebugLine = interpreter.findNextLine()
         if (!isRunning || interpreter.stackTrace.isEmpty()) return
 
         val temp = mutableListOf<Int>().apply {
@@ -114,6 +115,7 @@ class Debugger(private val inputStrategy: InputStrategy,
         currentDebugLine = interpreter.currentLine
         waitInput()
     }
+
 
     /**
      * Show current memory of our interpreter

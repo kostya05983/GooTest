@@ -50,6 +50,14 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         }
     }
 
+    fun findNextLine(): Int {
+        var result = currentLine + 1
+        while (result < codeMapper.executableLines.size && codeMapper.executableLines[result].tokens.isEmpty()) {
+            result++
+        }
+        return result
+    }
+
     /**
      * Execute separate line and increment
      */
