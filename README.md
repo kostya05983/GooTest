@@ -1,7 +1,7 @@
 ### About project
 This is interpreter and debugger of guu language
 
-The project has seperate modules
+The project has separate modules
 
 * gui - view part, user interface
 
@@ -12,7 +12,7 @@ interpreter and debugger
 
 ### Build project
 
-1. You need java 8 and gradle 5 to build this project
+1. You need java 8 and gradle 5.4 to build this project
 
 2. Go to root gradle directory
 

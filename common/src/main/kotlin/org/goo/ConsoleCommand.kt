@@ -1,3 +1,5 @@
+package org.goo
+
 /**
  * Enum contains available commands for CLIWindow
  * which can be prompted  by user

@@ -1,5 +1,6 @@
 package org.goo.debugger
 
+import org.goo.ConsoleCommand
 import org.goo.api.InputStrategy
 import org.goo.interpreter.Interpreter
 import org.goo.scanner.Token

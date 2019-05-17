@@ -1,0 +1,12 @@
+sub main
+    set c 8
+    random a
+    call test
+
+sub test
+    set b 5
+    print a
+    call test2
+
+sub test2
+    print c

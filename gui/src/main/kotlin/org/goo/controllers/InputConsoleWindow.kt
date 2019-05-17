@@ -1,5 +1,6 @@
 package org.goo.controllers
 
+import org.goo.ConsoleCommand
 import org.goo.api.InputStrategy
 import org.goo.view.DebugLineEvent
 import org.goo.view.RestoreColor
