@@ -1,7 +1,7 @@
 ### About project
 This is interpreter and debugger of guu language
 
-The project has separate modules
+The project has separate modules:
 
 * gui - view part, user interface
 
@@ -10,7 +10,7 @@ interpreter and debugger
 
 * common - constants which is used between modules
 
-Features
+Features:
  
 * you can use step_into or step_over
 
