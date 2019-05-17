@@ -1,7 +1,6 @@
 package org.goo.controllers
 
 import org.goo.api.InputStrategy
-import org.goo.debugger.Commands
 import org.goo.view.DebugLineEvent
 import org.goo.view.RestoreColor
 import tornadofx.Controller
@@ -31,10 +30,10 @@ class InputConsoleWindow : InputStrategy, Controller() {
      */
     private fun restore(line: String) {
         when (line) {
-            Commands.STEP_INTO.text -> {
+            ConsoleCommand.STEP_INTO.text -> {
                 fire(RestoreColor())
             }
-            Commands.STEP_OVER.text -> {
+            ConsoleCommand.STEP_OVER.text -> {
                 fire(RestoreColor())
             }
         }

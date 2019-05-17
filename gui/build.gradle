@@ -27,6 +27,7 @@ dependencies {
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.0'
 
     compile project(":core")
+    compile project(":common")
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
 }

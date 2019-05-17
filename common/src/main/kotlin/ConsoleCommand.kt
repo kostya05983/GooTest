@@ -1,5 +1,3 @@
-package org.goo.view
-
 /**
  * Enum contains available commands for CLIWindow
  * which can be prompted  by user

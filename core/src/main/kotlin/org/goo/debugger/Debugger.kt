@@ -56,16 +56,16 @@ class Debugger(private val inputStrategy: InputStrategy,
     private fun waitInput() {
         inputStrategy.wait({
             when (it) {
-                Commands.STEP_INTO.text -> {
+                ConsoleCommand.STEP_INTO.text -> {
                     stepInto()
                 }
-                Commands.STEP_OVER.text -> {
+                ConsoleCommand.STEP_OVER.text -> {
                     stepOver()
                 }
-                Commands.TRACE.text -> {
+                ConsoleCommand.TRACE.text -> {
                     showStackTrace()
                 }
-                Commands.VAR.text -> {
+                ConsoleCommand.VAR.text -> {
                     showMemory()
                 }
                 else -> {
