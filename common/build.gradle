@@ -2,9 +2,12 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.11'
 }
 
-group 'Goo Debugger'
+group 'Goo-Debugger'
 apply plugin: "application"
 version '1.0-SNAPSHOT'
+
+mainClassName = "org.goo.EntryPointKt"
+
 
 repositories {
     mavenCentral()

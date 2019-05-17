@@ -1,0 +1,8 @@
+
+group 'Goo-Debugger'
+apply plugin: "application"
+version '1.0-SNAPSHOT'
+
+mainClassName = "org.goo.EntryPointKt"
+
+build.dependsOn tasks.getByPath(':core:testClasses')

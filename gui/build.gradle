@@ -3,7 +3,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "4.0.4"
 }
 
-group 'Goo Debugger'
+group 'Goo-Debugger'
 apply plugin: "application"
 version '1.0-SNAPSHOT'
 
@@ -30,6 +30,16 @@ dependencies {
     compile project(":common")
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
+//    testCompile project(':core')
+//    testCompile files(project(':core').sourceSets.test.output)
+}
+
+//build.dependsOn(":core")
+//build.dependsOn tasks.getByPath(':core:testClasses')
+test {
+    dependsOn ':core:testClasses'
+    useJUnitPlatform()
+    
 }
 
 compileKotlin {

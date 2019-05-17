@@ -36,7 +36,8 @@ internal class DebuggerTest {
             val tokens = scanner.scan(text)
 
             val debugger = Debugger(InputTest("var"), Interpreter(OutputTest()))
-            debugger.stopPoints.add(1)
+            debugger.isRunning = true
+            debugger.stopPoints.add(2)
             debugger.debug(tokens)
 
             assertEquals("a -> 5\n", outContent.toString())
@@ -56,7 +57,8 @@ internal class DebuggerTest {
             val tokens = scanner.scan(text)
 
             val debugger = Debugger(InputTest("var"), Interpreter(OutputTest()))
-            debugger.stopPoints.add(4)
+            debugger.stopPoints.add(5)
+            debugger.isRunning = true
             debugger.debug(tokens)
             assertEquals("""
                 a -> 6
@@ -80,6 +82,7 @@ internal class DebuggerTest {
 
 
             val debugger = Debugger(InputTest("trace"), Interpreter(OutputTest()))
+            debugger.isRunning = true
             debugger.stopPoints.add(2)
             debugger.debug(tokens)
 
@@ -106,7 +109,8 @@ internal class DebuggerTest {
             val tokens = scanner.scan(text)
 
             val debugger = Debugger(InputTest("trace"), Interpreter(OutputTest()))
-            debugger.stopPoints.add(6)
+            debugger.stopPoints.add(7)
+            debugger.isRunning = true
             debugger.debug(tokens)
 
             assertEquals("""
