@@ -22,7 +22,8 @@ class Interpreter(val outputStrategy: OutputStrategy) {
             Tokens.CALL.text to CallOperator(this),
             Tokens.PRINT.text to PrintOperator(memory, outputStrategy),
             Tokens.SET.text to SetOperator(memory),
-            Tokens.SUB.text to SubOperator()
+            Tokens.SUB.text to SubOperator(),
+            Tokens.RANDOM.text to RandomOperator(memory)
     )
 
     fun init(tokens: List<Token>) {

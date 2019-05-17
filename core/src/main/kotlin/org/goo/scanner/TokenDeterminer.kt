@@ -16,8 +16,11 @@ class TokenDeterminer {
             Tokens.SUB.text -> {
                 Token(Tokens.SUB, token, line)
             }
-            Tokens.NEWLINE.text  -> {
+            Tokens.NEWLINE.text -> {
                 Token(Tokens.NEWLINE, token, line)
+            }
+            Tokens.RANDOM.text -> {
+                Token(Tokens.RANDOM, token, line)
             }
             "" -> {
                 null

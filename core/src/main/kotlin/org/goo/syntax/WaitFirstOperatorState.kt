@@ -9,7 +9,7 @@ class WaitFirstOperatorState(override val analyzer: SyntaxAnalyzer, override val
             Tokens.CALL -> {
                 analyzer.changeState(BinaryRightState(analyzer, errors))
             }
-            Tokens.PRINT -> {
+            Tokens.PRINT, Tokens.RANDOM -> {
                 analyzer.changeState(BinaryRightState(analyzer, errors))
             }
             Tokens.SET -> {

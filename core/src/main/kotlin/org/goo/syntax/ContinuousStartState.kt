@@ -18,6 +18,9 @@ class ContinuousStartState(override val analyzer: SyntaxAnalyzer, override val e
             Tokens.SET -> {
                 analyzer.changeState(TernarInternalState(analyzer, errors))
             }
+            Tokens.RANDOM -> {
+                analyzer.changeState(BinaryRightState(analyzer, errors))
+            }
             Tokens.NEWLINE -> {
             }
             else -> {
