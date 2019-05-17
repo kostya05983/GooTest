@@ -10,6 +10,18 @@ interpreter and debugger
 
 * common - constants which is used between modules
 
+Features
+ 
+* you can use step_into or step_over
+
+* check current memory
+
+* check current stacktrace
+
+* add multiple lines to debug
+
+* empty lines will be skipped
+
 ### Build project
 
 1. You need java 8 oracle and gradle 5.4 to build this project
