@@ -86,7 +86,7 @@ internal class DebuggerTest {
             debugger.stopPoints.add(2)
             debugger.debug(tokens)
 
-            assertEquals("Line=0 name=main\n", outContent.toString())
+            assertEquals("Line=2 name=main\n", outContent.toString())
         }
 
         @Test
@@ -114,10 +114,10 @@ internal class DebuggerTest {
             debugger.debug(tokens)
 
             assertEquals("""
-                Line=5 name=fun3
-                Line=2 name=pop
-                Line=11 name=test
-                Line=8 name=main
+                Line=7 name=fun3
+                Line=5 name=pop
+                Line=2 name=test
+                Line=11 name=main
 
             """.trimIndent(), outContent.toString())
         }

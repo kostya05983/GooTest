@@ -1,8 +1,10 @@
 package org.goo.view
 
 
+import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.layout.Priority
+import javafx.scene.text.TextAlignment
 import org.goo.ColorProperties
 import tornadofx.*
 import kotlin.system.exitProcess
@@ -14,6 +16,7 @@ class MainWindow : View() {
 
     override val root: Parent =
             vbox {
+                title = "Guu debugger"
                 vgrow = Priority.ALWAYS
                 style {
                     backgroundColor += ColorProperties.secondColor
@@ -25,17 +28,25 @@ class MainWindow : View() {
                 val editor: Editor = find(mapOf(Editor::path to path))
 
                 add(editor)
-                region {
-                    style {
-                        minHeight = Dimension(20.0, Dimension.LinearUnits.px)
+                hbox(alignment = Pos.CENTER) {
+                    label {
+                        text = "Input your commands below"
+                        textFill = ColorProperties.fontColor
+                        style {
+                            minHeight = Dimension(20.0, Dimension.LinearUnits.px)
+                        }
                     }
                 }
 
                 val cliWindow = find<CLIWindow>(mapOf(CLIWindow::editor to editor))
                 add(cliWindow)
-                region {
-                    style {
-                        minHeight = Dimension(20.0, Dimension.LinearUnits.px)
+                hbox(alignment = Pos.CENTER) {
+                    label {
+                        text = "Console Output"
+                        textFill = ColorProperties.fontColor
+                        style {
+                            minHeight = Dimension(20.0, Dimension.LinearUnits.px)
+                        }
                     }
                 }
                 add<Console>()

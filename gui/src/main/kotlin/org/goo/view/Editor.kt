@@ -1,8 +1,8 @@
 package org.goo.view
 
+import javafx.beans.binding.Bindings
+import javafx.geometry.Insets
 import javafx.scene.input.KeyCombination
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
 import org.fxmisc.richtext.CodeArea
 import org.goo.ColorProperties
 import org.goo.controllers.CommandEvent
@@ -11,6 +11,13 @@ import org.goo.styles.CodeAreaStyles
 import org.goo.styles.EditorStyles
 import org.goo.ConsoleCommand
 import tornadofx.*
+import javafx.geometry.Pos
+import javafx.scene.Node
+import javafx.scene.layout.*
+import javafx.scene.paint.Color
+import java.util.function.IntFunction
+import org.fxmisc.richtext.LineNumberFactory
+
 
 /**
  * View contains our editor with code
@@ -33,7 +40,21 @@ class Editor : View() {
         vgrow = Priority.ALWAYS
 
         loadCodeAreaStyles()
+        initGraphicFactory()
         add(codeArea)
+    }
+
+    private fun initGraphicFactory() {
+        val numberFactory = LineNumberFactory.get(codeArea)
+
+        codeArea.setParagraphGraphicFactory {
+            val node = numberFactory.apply(it - 1)
+            node.style {
+                backgroundColor += ColorProperties.primaryColor
+            }
+            val hbox = HBox(node)
+            hbox
+        }
     }
 
     private fun loadCodeAreaStyles() {

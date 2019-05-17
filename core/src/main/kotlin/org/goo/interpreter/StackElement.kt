@@ -1,3 +1,3 @@
 package org.goo.interpreter
 
-class StackElement(val name: String, val line: Int)
+class StackElement(val name: String, var line: Int)

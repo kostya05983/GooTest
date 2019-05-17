@@ -96,6 +96,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         val line = codeMapper.executableLines[currentLine]
         if (line.tokens.isEmpty()) {
             currentLine++
+            stackTrace.peek().line = currentLine
             return
         }
 
@@ -111,6 +112,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         executeOperator(line.tokens)
         line.isExecuted = true
         currentLine++
+        stackTrace.peek().line = currentLine
 
         //Check post return
         checkPostCondition()
@@ -132,6 +134,7 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         var nextLine = codeMapper.executableLines[currentLine]
         while (nextLine.tokens.isEmpty()) {
             currentLine++
+            stackTrace.peek().line = currentLine
             nextLine = codeMapper.executableLines[currentLine]
         }
 
@@ -168,8 +171,14 @@ class Interpreter(val outputStrategy: OutputStrategy) {
      * The sub is ended we pop this from stack
      */
     private fun Stack<StackElement>.popStackElement() {
-        val pop = pop()
-        currentLine = pop.line + 1
-        checkPostCondition()
+        if (isNotEmpty()) {
+            pop()
+            if (isNotEmpty()) {
+                val peek = peek()
+                peek.line += 1
+                currentLine = peek.line
+            }
+            checkPostCondition()
+        }
     }
 }
