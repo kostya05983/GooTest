@@ -45,6 +45,9 @@ class CLIWindowController : Controller() {
         }
     }
 
+    /**
+     * Debug command
+     */
     private fun debug() {
         debuggerThread = Thread {
             val text = editor.codeArea.text
@@ -58,6 +61,7 @@ class CLIWindowController : Controller() {
                     this@CLIWindowController.out = out
                     val inputConsoleWindow: InputConsoleWindow = find(mapOf(InputConsoleWindow::input to PipedInputStream(out)))
                     val interpreter = Interpreter(outputStrategy)
+
                     val debugger = Debugger(inputConsoleWindow, interpreter)
                     debugger.reset()
                     debugger.stopPoints = currentStopPoints
@@ -65,6 +69,7 @@ class CLIWindowController : Controller() {
                     this.debugger = debugger
                     debugger.debug(tokens)
                     debugger.isRunning = false
+
                     fire(OutputEventLn("End debug session"))
                 }
             }
@@ -72,6 +77,9 @@ class CLIWindowController : Controller() {
         debuggerThread?.start()
     }
 
+    /**
+     * Stop current run or debug session
+     */
     private fun stop() {
         try {
             debuggerThread?.interrupt()
@@ -89,8 +97,11 @@ class CLIWindowController : Controller() {
         fire(RestoreColor())
     }
 
+    /**
+     * Add stop point to memory
+     */
     private fun add(split: List<String>) {
-        if (1 == split.size) {
+        if (split.size == 1) {
             fire(OutputEventLn("[ERROR] Add number in add expression"))
             return
         }
@@ -102,6 +113,9 @@ class CLIWindowController : Controller() {
         fire(OutputEventLn("Successfully add point at $number"))
     }
 
+    /**
+     * Remove stop point from memory
+     */
     private fun remove(split: List<String>) {
         val number = split[1].toIntOrNull() ?: let {
             fire(OutputEventLn("Add number in add expression"))
@@ -124,6 +138,9 @@ class CLIWindowController : Controller() {
         out?.flush()
     }
 
+    /**
+     * Run code in editor
+     */
     private fun run() {
         interpreterThread = Thread {
             val text = editor.codeArea.text
@@ -147,6 +164,9 @@ class CLIWindowController : Controller() {
         interpreterThread?.start()
     }
 
+    /**
+     * Print help to user
+     */
     private fun help() {
         val sb = StringBuilder()
         sb.appendln("[INFO] step - go to next line")

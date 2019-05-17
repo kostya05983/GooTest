@@ -8,6 +8,12 @@ import java.util.*
 
 /**
  * Interpreter implementation
+ * isRunning - for interruption when interpreter cycles in recursion
+ * stackTrace - current stack of our program
+ * currentLine - line to execute now
+ * codeMapper - contains subs with lines to jump
+ * memory - memory of our program
+ * @param outputStrategy - strategy for utputing information
  * @author kostya05983
  */
 class Interpreter(val outputStrategy: OutputStrategy) {
@@ -26,7 +32,11 @@ class Interpreter(val outputStrategy: OutputStrategy) {
             Tokens.RANDOM.text to RandomOperator(memory)
     )
 
-    fun init(tokens: List<Token>) {
+    /**
+     * Init interpreter for run
+     * @param tokens - scanned tokens from program
+     */
+    internal fun init(tokens: List<Token>) {
         isRunning = true
         codeMapper.mapToSubs(tokens)
 
@@ -36,6 +46,9 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         currentLine++
     }
 
+    /**
+     * Reset interpreter to default state
+     */
     fun reset() {
         isRunning = false
         memory.clear()
@@ -44,6 +57,9 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         codeMapper.reset()
     }
 
+    /**
+     * Interpreter transferred tokens
+     */
     fun interpret(tokens: List<Token>) {
         init(tokens)
         while (isRunning && stackTrace.isNotEmpty()) {
@@ -51,6 +67,10 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         }
     }
 
+    /**
+     * Find next line for step_over
+     * @return - next line where to stop after step_over
+     */
     fun findNextLine(): Int {
         var result = currentLine + 1
         while (result < codeMapper.executableLines.size && codeMapper.executableLines[result].tokens.isEmpty()) {
@@ -61,6 +81,11 @@ class Interpreter(val outputStrategy: OutputStrategy) {
 
     /**
      * Execute separate line and increment
+     * First we check isn't this last execution?
+     * Second we skip empty lines
+     * Third we check isn't this last execution?
+     * Fourth we check isn't this end of sub, cause we meet another sub?
+     *
      */
     fun execute() {
         if (isRunning && currentLine >= codeMapper.executableLines.size) {
@@ -91,6 +116,13 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         checkPostCondition()
     }
 
+    /**
+     * Check post conditions for recursion return from calling subs
+     * First we check isn't this last execution?
+     * Second we skip empty lines
+     * Third we check isn't this last execution?
+     * Fourth we check isn't this end of sub, cause we meet another sub?
+     */
     private fun checkPostCondition() {
         //Check post return
         if (isRunning && currentLine >= codeMapper.executableLines.size) {
@@ -123,12 +155,18 @@ class Interpreter(val outputStrategy: OutputStrategy) {
         operators[list[0].text]!!.interpreter(*args, list[0].line.toString())
     }
 
+    /**
+     * When we call new sub, we set new sub to stack and change line
+     */
     fun setCurrentLine(name: String, callingLine: Int) {
         val line = codeMapper.subs[name] ?: error("Such sub not found name=$name")
         stackTrace.push(StackElement(name, callingLine))
         currentLine = line
     }
 
+    /**
+     * The sub is ended we pop this from stack
+     */
     private fun Stack<StackElement>.popStackElement() {
         val pop = pop()
         currentLine = pop.line + 1

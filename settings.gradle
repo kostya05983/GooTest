@@ -1,2 +1,2 @@
-rootProject.name = 'Goo Debugger'
+rootProject.name = 'Goo-Debugger'
 include 'core', 'gui', 'common'

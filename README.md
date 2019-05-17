@@ -1,12 +1,24 @@
+### About project
+This is interpreter and debugger of guu language
+
+The project has seperate modules
+
+* gui - view part, user interface
+
+* core - scanner, syntaxAnalyzer, semanticAnalyzer, 
+interpreter and debugger
+
+* common - constants which is used between modules
+
 ### Build project
 
-1. You need java 8 and gradle 4.4.1 to build this project
+1. You need java 8 and gradle 5 to build this project
 
-2. Go to ./gui module
+2. Go to root gradle directory
 
 3. Run gradle build
 
-4. Next run jar, java -jar ./build/libs/gui-1.0-SNAPSHOT-all.jar path_to_file
+4. Next run jar with oracle java8, java -jar ./gui/build/libs/gui-1.0-SNAPSHOT.jar path_to_file
 
 ### Interface
 
@@ -18,13 +30,13 @@ and third for output
 
 #### Debugger commands
 
-step - step to next debug line it's similar to step_into
+* step - step to next debug line it's similar to step_into
 
-step_over - step to next line , skip debug of calls
+* step_over - step to next line , skip debug of calls
 
-var - output current memory
+* var - output current memory
 
-trace - output current stackTrace
+* trace - output current stackTrace
 
 #### Console commands
 
@@ -34,7 +46,7 @@ trace - output current stackTrace
 
 * points - output current stop points
 
-* stop - set to debug and run session isRunning false
+* stop - stop currentSession of debug or run
 
 * debug - start debug code
 
@@ -54,8 +66,42 @@ and in /core/src/main/kotlin/org/goo/syntax/WaitFirstOperatorState.kt
 4 Realize new operator in /core/src/main/kotlin/org/goo/interpreter/operators
 
 5 And add it to mapping in /core/src/main/kotlin/org/goo/interpreter/Interpreter.kt
+
+### Available operators
+
+Example 
+````
+sub test
+    print b
+sub main
+    set a 5
+    random b
+    print a
+    call test
+````
+* print <var> - print variable
+
+* set <var> <numeric> - set to var numeric value
+
+* call <var> - call sup with name var
+
+* random <var> - set random numeric to var
+
+### For test
+
+For test you can run with example.txt file
+
+
 ### Technologies
 
-* Kotlin
-* Junit5
-* Tornadofx
+* Kotlin [https://github.com/JetBrains/kotlin]
+
+* Junit5 [https://github.com/junit-team/junit5]
+
+* Tornadofx [https://github.com/edvin/tornadofx]
+
+### Feature versions
+
+* Change to socket connection, between debugger and gui
+
+* add gui buttons for debug

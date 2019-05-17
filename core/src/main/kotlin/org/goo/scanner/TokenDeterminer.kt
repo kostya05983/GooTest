@@ -1,5 +1,8 @@
 package org.goo.scanner
 
+/**
+ * Responsible for determine scanned token
+ */
 class TokenDeterminer {
 
     fun getToken(token: String, line: Int): Token? {

@@ -7,6 +7,9 @@ import org.goo.scanner.Token
 /**
  * Class of debugger contains interpreter to manage
  * and strategy to get messages from user
+ * @param inputStrategy - strategy for wait input from user
+ * @param interpreter - interpreter for interpret code
+ * Stop poitns - points where debugger has to be stopped
  * @author kostya05983
  */
 class Debugger(private val inputStrategy: InputStrategy,

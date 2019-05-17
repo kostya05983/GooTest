@@ -7,6 +7,9 @@ class SyntaxAnalyzer {
 
     private var currentState: State = InitState(this, LinkedList())
 
+    /**
+     * Analyze code for syntax errors
+     */
     fun analyze(tokens: List<Token>): List<Token> {
         for (token in tokens) {
             currentState.check(token)
