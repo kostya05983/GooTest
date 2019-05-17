@@ -103,7 +103,7 @@ sub main
 
 * set <var> <numeric> - set to var numeric value
 
-* call <var> - call sup with name var
+* call <var> - call sub with name var
 
 * random <var> - set random numeric to var
 
