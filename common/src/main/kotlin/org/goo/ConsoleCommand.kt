@@ -6,7 +6,7 @@ package org.goo
  */
 enum class ConsoleCommand(val text: String) {
     VAR("var"), TRACE("trace"),
-    STEP_INTO("step"), STEP_OVER("step_over"),
+    STEP_INTO("i"), STEP_OVER("o"),
     CLEAR("clear"),
     DEBUG("debug"),
     STOP("stop"),
